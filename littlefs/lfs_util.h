@@ -20,8 +20,8 @@
 #else
 
 // System includes
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
 
 #ifndef LFS_NO_MALLOC
@@ -35,10 +35,8 @@
 #endif
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
-
 
 // Macros, may be replaced by system specific wrappers. Arguments to these
 // macros must not have side-effects as the macros can be removed for a smaller
@@ -46,22 +44,19 @@ extern "C"
 
 // Logging functions
 #ifndef LFS_NO_DEBUG
-#define LFS_DEBUG(fmt, ...) \
-    printf("lfs debug:%d: " fmt "\n", __LINE__, __VA_ARGS__)
+#define LFS_DEBUG(fmt, ...) printf("lfs debug:%d: " fmt "\n", __LINE__, __VA_ARGS__)
 #else
 #define LFS_DEBUG(fmt, ...)
 #endif
 
 #ifndef LFS_NO_WARN
-#define LFS_WARN(fmt, ...) \
-    printf("lfs warn:%d: " fmt "\n", __LINE__, __VA_ARGS__)
+#define LFS_WARN(fmt, ...) printf("lfs warn:%d: " fmt "\n", __LINE__, __VA_ARGS__)
 #else
 #define LFS_WARN(fmt, ...)
 #endif
 
 #ifndef LFS_NO_ERROR
-#define LFS_ERROR(fmt, ...) \
-    printf("lfs error:%d: " fmt "\n", __LINE__, __VA_ARGS__)
+#define LFS_ERROR(fmt, ...) printf("lfs error:%d: " fmt "\n", __LINE__, __VA_ARGS__)
 #else
 #define LFS_ERROR(fmt, ...)
 #endif
@@ -72,7 +67,6 @@ extern "C"
 #else
 #define LFS_ASSERT(test)
 #endif
-
 
 // Builtin functions, these may be replaced by more efficient
 // toolchain-specific implementations. LFS_NO_INTRINSICS falls back to a more
@@ -90,15 +84,23 @@ static inline uint32_t lfs_min(uint32_t a, uint32_t b) {
 // Find the next smallest power of 2 less than or equal to a
 static inline uint32_t lfs_npw2(uint32_t a) {
 #if !defined(LFS_NO_INTRINSICS) && (defined(__GNUC__) || defined(__CC_ARM))
-    return 32 - __builtin_clz(a-1);
+    return 32 - __builtin_clz(a - 1);
 #else
     uint32_t r = 0;
     uint32_t s;
     a -= 1;
-    s = (a > 0xffff) << 4; a >>= s; r |= s;
-    s = (a > 0xff  ) << 3; a >>= s; r |= s;
-    s = (a > 0xf   ) << 2; a >>= s; r |= s;
-    s = (a > 0x3   ) << 1; a >>= s; r |= s;
+    s = (a > 0xffff) << 4;
+    a >>= s;
+    r |= s;
+    s = (a > 0xff) << 3;
+    a >>= s;
+    r |= s;
+    s = (a > 0xf) << 2;
+    a >>= s;
+    r |= s;
+    s = (a > 0x3) << 1;
+    a >>= s;
+    r |= s;
     return (r | (a >> 1)) + 1;
 #endif
 }
@@ -132,21 +134,19 @@ static inline int lfs_scmp(uint32_t a, uint32_t b) {
 
 // Convert from 32-bit little-endian to native order
 static inline uint32_t lfs_fromle32(uint32_t a) {
-#if !defined(LFS_NO_INTRINSICS) && ( \
-    (defined(  BYTE_ORDER  ) &&   BYTE_ORDER   ==   ORDER_LITTLE_ENDIAN  ) || \
-    (defined(__BYTE_ORDER  ) && __BYTE_ORDER   == __ORDER_LITTLE_ENDIAN  ) || \
-    (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__))
+#if !defined(LFS_NO_INTRINSICS) &&                                       \
+    ((defined(BYTE_ORDER) && BYTE_ORDER == ORDER_LITTLE_ENDIAN) ||       \
+     (defined(__BYTE_ORDER) && __BYTE_ORDER == __ORDER_LITTLE_ENDIAN) || \
+     (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__))
     return a;
-#elif !defined(LFS_NO_INTRINSICS) && ( \
-    (defined(  BYTE_ORDER  ) &&   BYTE_ORDER   ==   ORDER_BIG_ENDIAN  ) || \
-    (defined(__BYTE_ORDER  ) && __BYTE_ORDER   == __ORDER_BIG_ENDIAN  ) || \
-    (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__))
+#elif !defined(LFS_NO_INTRINSICS) &&                                  \
+    ((defined(BYTE_ORDER) && BYTE_ORDER == ORDER_BIG_ENDIAN) ||       \
+     (defined(__BYTE_ORDER) && __BYTE_ORDER == __ORDER_BIG_ENDIAN) || \
+     (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__))
     return __builtin_bswap32(a);
 #else
-    return (((uint8_t*)&a)[0] <<  0) |
-           (((uint8_t*)&a)[1] <<  8) |
-           (((uint8_t*)&a)[2] << 16) |
-           (((uint8_t*)&a)[3] << 24);
+    return (((uint8_t *)&a)[0] << 0) | (((uint8_t *)&a)[1] << 8) | (((uint8_t *)&a)[2] << 16) |
+           (((uint8_t *)&a)[3] << 24);
 #endif
 }
 
@@ -176,7 +176,6 @@ static inline void lfs_free(void *p) {
     (void)p;
 #endif
 }
-
 
 #ifdef __cplusplus
 } /* extern "C" */

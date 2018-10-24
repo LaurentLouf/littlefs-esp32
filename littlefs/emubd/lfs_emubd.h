@@ -11,10 +11,8 @@
 #include "lfs_util.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
-
 
 // Config options
 #ifndef LFS_EMUBD_READ_SIZE
@@ -32,7 +30,6 @@ extern "C"
 #ifndef LFS_EMUBD_TOTAL_SIZE
 #define LFS_EMUBD_TOTAL_SIZE 524288
 #endif
-
 
 // The emu bd state
 typedef struct lfs_emubd {
@@ -53,7 +50,6 @@ typedef struct lfs_emubd {
     } cfg;
 } lfs_emubd_t;
 
-
 // Create a block device using path for the directory to store blocks
 int lfs_emubd_create(const struct lfs_config *cfg, const char *path);
 
@@ -61,14 +57,14 @@ int lfs_emubd_create(const struct lfs_config *cfg, const char *path);
 void lfs_emubd_destroy(const struct lfs_config *cfg);
 
 // Read a block
-int lfs_emubd_read(const struct lfs_config *cfg, lfs_block_t block,
-        lfs_off_t off, void *buffer, lfs_size_t size);
+int lfs_emubd_read(const struct lfs_config *cfg, lfs_block_t block, lfs_off_t off, void *buffer,
+                   lfs_size_t size);
 
 // Program a block
 //
 // The block must have previously been erased.
-int lfs_emubd_prog(const struct lfs_config *cfg, lfs_block_t block,
-        lfs_off_t off, const void *buffer, lfs_size_t size);
+int lfs_emubd_prog(const struct lfs_config *cfg, lfs_block_t block, lfs_off_t off,
+                   const void *buffer, lfs_size_t size);
 
 // Erase a block
 //
@@ -78,7 +74,6 @@ int lfs_emubd_erase(const struct lfs_config *cfg, lfs_block_t block);
 
 // Sync the block device
 int lfs_emubd_sync(const struct lfs_config *cfg);
-
 
 #ifdef __cplusplus
 } /* extern "C" */

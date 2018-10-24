@@ -6,25 +6,24 @@
  */
 #include "emubd/lfs_emubd.h"
 
-#include <errno.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <limits.h>
+#include <assert.h>
 #include <dirent.h>
+#include <errno.h>
+#include <inttypes.h>
+#include <limits.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <assert.h>
-#include <stdbool.h>
-#include <inttypes.h>
-
 
 // Block device emulated on existing filesystem
 int lfs_emubd_create(const struct lfs_config *cfg, const char *path) {
     lfs_emubd_t *emu = cfg->context;
-    emu->cfg.read_size   = cfg->read_size;
-    emu->cfg.prog_size   = cfg->prog_size;
-    emu->cfg.block_size  = cfg->block_size;
+    emu->cfg.read_size = cfg->read_size;
+    emu->cfg.prog_size = cfg->prog_size;
+    emu->cfg.block_size = cfg->block_size;
     emu->cfg.block_count = cfg->block_count;
 
     // Allocate buffer for creating children files
@@ -36,8 +35,8 @@ int lfs_emubd_create(const struct lfs_config *cfg, const char *path) {
 
     strcpy(emu->path, path);
     emu->path[pathlen] = '/';
-    emu->child = &emu->path[pathlen+1];
-    memset(emu->child, '\0', LFS_NAME_MAX+1);
+    emu->child = &emu->path[pathlen + 1];
+    memset(emu->child, '\0', LFS_NAME_MAX + 1);
 
     // Create directory if it doesn't exist
     int err = mkdir(path, 0777);
@@ -77,13 +76,13 @@ void lfs_emubd_destroy(const struct lfs_config *cfg) {
     free(emu->path);
 }
 
-int lfs_emubd_read(const struct lfs_config *cfg, lfs_block_t block,
-        lfs_off_t off, void *buffer, lfs_size_t size) {
+int lfs_emubd_read(const struct lfs_config *cfg, lfs_block_t block, lfs_off_t off, void *buffer,
+                   lfs_size_t size) {
     lfs_emubd_t *emu = cfg->context;
     uint8_t *data = buffer;
 
     // Check if read is valid
-    assert(off  % cfg->read_size == 0);
+    assert(off % cfg->read_size == 0);
     assert(size % cfg->read_size == 0);
     assert(block < cfg->block_count);
 
@@ -119,13 +118,13 @@ int lfs_emubd_read(const struct lfs_config *cfg, lfs_block_t block,
     return 0;
 }
 
-int lfs_emubd_prog(const struct lfs_config *cfg, lfs_block_t block,
-        lfs_off_t off, const void *buffer, lfs_size_t size) {
+int lfs_emubd_prog(const struct lfs_config *cfg, lfs_block_t block, lfs_off_t off,
+                   const void *buffer, lfs_size_t size) {
     lfs_emubd_t *emu = cfg->context;
     const uint8_t *data = buffer;
 
     // Check if write is valid
-    assert(off  % cfg->prog_size == 0);
+    assert(off % cfg->prog_size == 0);
     assert(size % cfg->prog_size == 0);
     assert(block < cfg->block_count);
 

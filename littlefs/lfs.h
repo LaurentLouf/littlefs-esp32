@@ -7,14 +7,12 @@
 #ifndef LFS_H
 #define LFS_H
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
-
 
 /// Version info ///
 
@@ -23,15 +21,14 @@ extern "C"
 // Minor (bottom-nibble), incremented on feature additions
 #define LFS_VERSION 0x00010007
 #define LFS_VERSION_MAJOR (0xffff & (LFS_VERSION >> 16))
-#define LFS_VERSION_MINOR (0xffff & (LFS_VERSION >>  0))
+#define LFS_VERSION_MINOR (0xffff & (LFS_VERSION >> 0))
 
 // Version of On-disk data structures
 // Major (top-nibble), incremented on backwards incompatible changes
 // Minor (bottom-nibble), incremented on feature additions
 #define LFS_DISK_VERSION 0x00010001
 #define LFS_DISK_VERSION_MAJOR (0xffff & (LFS_DISK_VERSION >> 16))
-#define LFS_DISK_VERSION_MINOR (0xffff & (LFS_DISK_VERSION >>  0))
-
+#define LFS_DISK_VERSION_MINOR (0xffff & (LFS_DISK_VERSION >> 0))
 
 /// Definitions ///
 
@@ -39,8 +36,8 @@ extern "C"
 typedef uint32_t lfs_size_t;
 typedef uint32_t lfs_off_t;
 
-typedef int32_t  lfs_ssize_t;
-typedef int32_t  lfs_soff_t;
+typedef int32_t lfs_ssize_t;
+typedef int32_t lfs_soff_t;
 
 typedef uint32_t lfs_block_t;
 
@@ -57,53 +54,52 @@ typedef uint32_t lfs_block_t;
 // Possible error codes, these are negative to allow
 // valid positive return values
 enum lfs_error {
-    LFS_ERR_OK       = 0,    // No error
-    LFS_ERR_IO       = -5,   // Error during device operation
-    LFS_ERR_CORRUPT  = -52,  // Corrupted
-    LFS_ERR_NOENT    = -2,   // No directory entry
-    LFS_ERR_EXIST    = -17,  // Entry already exists
-    LFS_ERR_NOTDIR   = -20,  // Entry is not a dir
-    LFS_ERR_ISDIR    = -21,  // Entry is a dir
+    LFS_ERR_OK = 0,          // No error
+    LFS_ERR_IO = -5,         // Error during device operation
+    LFS_ERR_CORRUPT = -52,   // Corrupted
+    LFS_ERR_NOENT = -2,      // No directory entry
+    LFS_ERR_EXIST = -17,     // Entry already exists
+    LFS_ERR_NOTDIR = -20,    // Entry is not a dir
+    LFS_ERR_ISDIR = -21,     // Entry is a dir
     LFS_ERR_NOTEMPTY = -39,  // Dir is not empty
-    LFS_ERR_BADF     = -9,   // Bad file number
-    LFS_ERR_FBIG     = -27,  // File too large
-    LFS_ERR_INVAL    = -22,  // Invalid parameter
-    LFS_ERR_NOSPC    = -28,  // No space left on device
-    LFS_ERR_NOMEM    = -12,  // No more memory available
+    LFS_ERR_BADF = -9,       // Bad file number
+    LFS_ERR_FBIG = -27,      // File too large
+    LFS_ERR_INVAL = -22,     // Invalid parameter
+    LFS_ERR_NOSPC = -28,     // No space left on device
+    LFS_ERR_NOMEM = -12,     // No more memory available
 };
 
 // File types
 enum lfs_type {
-    LFS_TYPE_REG        = 0x11,
-    LFS_TYPE_DIR        = 0x22,
+    LFS_TYPE_REG = 0x11,
+    LFS_TYPE_DIR = 0x22,
     LFS_TYPE_SUPERBLOCK = 0x2e,
 };
 
 // File open flags
 enum lfs_open_flags {
     // open flags
-    LFS_O_RDONLY = 1,        // Open a file as read only
-    LFS_O_WRONLY = 2,        // Open a file as write only
-    LFS_O_RDWR   = 3,        // Open a file as read and write
-    LFS_O_CREAT  = 0x0100,   // Create a file if it does not exist
-    LFS_O_EXCL   = 0x0200,   // Fail if a file already exists
-    LFS_O_TRUNC  = 0x0400,   // Truncate the existing file to zero size
-    LFS_O_APPEND = 0x0800,   // Move to end of file on every write
+    LFS_O_RDONLY = 1,       // Open a file as read only
+    LFS_O_WRONLY = 2,       // Open a file as write only
+    LFS_O_RDWR = 3,         // Open a file as read and write
+    LFS_O_CREAT = 0x0100,   // Create a file if it does not exist
+    LFS_O_EXCL = 0x0200,    // Fail if a file already exists
+    LFS_O_TRUNC = 0x0400,   // Truncate the existing file to zero size
+    LFS_O_APPEND = 0x0800,  // Move to end of file on every write
 
     // internally used flags
-    LFS_F_DIRTY   = 0x10000, // File does not match storage
-    LFS_F_WRITING = 0x20000, // File has been written since last flush
-    LFS_F_READING = 0x40000, // File has been read since last flush
-    LFS_F_ERRED   = 0x80000, // An error occured during write
+    LFS_F_DIRTY = 0x10000,    // File does not match storage
+    LFS_F_WRITING = 0x20000,  // File has been written since last flush
+    LFS_F_READING = 0x40000,  // File has been read since last flush
+    LFS_F_ERRED = 0x80000,    // An error occured during write
 };
 
 // File seek flags
 enum lfs_whence_flags {
-    LFS_SEEK_SET = 0,   // Seek relative to an absolute position
-    LFS_SEEK_CUR = 1,   // Seek relative to the current file position
-    LFS_SEEK_END = 2,   // Seek relative to the end of the file
+    LFS_SEEK_SET = 0,  // Seek relative to an absolute position
+    LFS_SEEK_CUR = 1,  // Seek relative to the current file position
+    LFS_SEEK_END = 2,  // Seek relative to the end of the file
 };
-
 
 // Configuration provided during initialization of the littlefs
 struct lfs_config {
@@ -113,14 +109,14 @@ struct lfs_config {
 
     // Read a region in a block. Negative error codes are propogated
     // to the user.
-    int (*read)(const struct lfs_config *c, lfs_block_t block,
-            lfs_off_t off, void *buffer, lfs_size_t size);
+    int (*read)(const struct lfs_config *c, lfs_block_t block, lfs_off_t off, void *buffer,
+                lfs_size_t size);
 
     // Program a region in a block. The block must have previously
     // been erased. Negative error codes are propogated to the user.
     // May return LFS_ERR_CORRUPT if the block should be considered bad.
-    int (*prog)(const struct lfs_config *c, lfs_block_t block,
-            lfs_off_t off, const void *buffer, lfs_size_t size);
+    int (*prog)(const struct lfs_config *c, lfs_block_t block, lfs_off_t off, const void *buffer,
+                lfs_size_t size);
 
     // Erase a block. A block must be erased before being programmed.
     // The state of an erased block is undefined. Negative error codes
@@ -189,9 +185,8 @@ struct lfs_info {
     lfs_size_t size;
 
     // Name of the file stored as a null-terminated string
-    char name[LFS_NAME_MAX+1];
+    char name[LFS_NAME_MAX + 1];
 };
-
 
 /// littlefs data structures ///
 typedef struct lfs_entry {
@@ -289,7 +284,6 @@ typedef struct lfs {
     bool moving;
 } lfs_t;
 
-
 /// Filesystem functions ///
 
 // Format a block device with the littlefs
@@ -339,7 +333,6 @@ int lfs_rename(lfs_t *lfs, const char *oldpath, const char *newpath);
 // Returns a negative error code on failure.
 int lfs_stat(lfs_t *lfs, const char *path, struct lfs_info *info);
 
-
 /// File operations ///
 
 // Open a file
@@ -348,8 +341,7 @@ int lfs_stat(lfs_t *lfs, const char *path, struct lfs_info *info);
 // are values from the enum lfs_open_flags that are bitwise-ored together.
 //
 // Returns a negative error code on failure.
-int lfs_file_open(lfs_t *lfs, lfs_file_t *file,
-        const char *path, int flags);
+int lfs_file_open(lfs_t *lfs, lfs_file_t *file, const char *path, int flags);
 
 // Open a file with extra configuration
 //
@@ -361,9 +353,8 @@ int lfs_file_open(lfs_t *lfs, lfs_file_t *file,
 // config struct must be zeroed for defaults and backwards compatibility.
 //
 // Returns a negative error code on failure.
-int lfs_file_opencfg(lfs_t *lfs, lfs_file_t *file,
-        const char *path, int flags,
-        const struct lfs_file_config *config);
+int lfs_file_opencfg(lfs_t *lfs, lfs_file_t *file, const char *path, int flags,
+                     const struct lfs_file_config *config);
 
 // Close a file
 //
@@ -383,8 +374,7 @@ int lfs_file_sync(lfs_t *lfs, lfs_file_t *file);
 //
 // Takes a buffer and size indicating where to store the read data.
 // Returns the number of bytes read, or a negative error code on failure.
-lfs_ssize_t lfs_file_read(lfs_t *lfs, lfs_file_t *file,
-        void *buffer, lfs_size_t size);
+lfs_ssize_t lfs_file_read(lfs_t *lfs, lfs_file_t *file, void *buffer, lfs_size_t size);
 
 // Write data to file
 //
@@ -392,15 +382,13 @@ lfs_ssize_t lfs_file_read(lfs_t *lfs, lfs_file_t *file,
 // actually be updated on the storage until either sync or close is called.
 //
 // Returns the number of bytes written, or a negative error code on failure.
-lfs_ssize_t lfs_file_write(lfs_t *lfs, lfs_file_t *file,
-        const void *buffer, lfs_size_t size);
+lfs_ssize_t lfs_file_write(lfs_t *lfs, lfs_file_t *file, const void *buffer, lfs_size_t size);
 
 // Change the position of the file
 //
 // The change in position is determined by the offset and whence flag.
 // Returns the old position of the file, or a negative error code on failure.
-lfs_soff_t lfs_file_seek(lfs_t *lfs, lfs_file_t *file,
-        lfs_soff_t off, int whence);
+lfs_soff_t lfs_file_seek(lfs_t *lfs, lfs_file_t *file, lfs_soff_t off, int whence);
 
 // Truncates the size of the file to the specified size
 //
@@ -424,7 +412,6 @@ int lfs_file_rewind(lfs_t *lfs, lfs_file_t *file);
 // Similar to lfs_file_seek(lfs, file, 0, LFS_SEEK_END)
 // Returns the size of the file, or a negative error code on failure.
 lfs_soff_t lfs_file_size(lfs_t *lfs, lfs_file_t *file);
-
 
 /// Directory operations ///
 
@@ -472,7 +459,6 @@ lfs_soff_t lfs_dir_tell(lfs_t *lfs, lfs_dir_t *dir);
 // Returns a negative error code on failure.
 int lfs_dir_rewind(lfs_t *lfs, lfs_dir_t *dir);
 
-
 /// Miscellaneous littlefs specific operations ///
 
 // Traverse through all blocks in use by the filesystem
@@ -482,7 +468,7 @@ int lfs_dir_rewind(lfs_t *lfs, lfs_dir_t *dir);
 // blocks are in use or how much of the storage is available.
 //
 // Returns a negative error code on failure.
-int lfs_traverse(lfs_t *lfs, int (*cb)(void*, lfs_block_t), void *data);
+int lfs_traverse(lfs_t *lfs, int (*cb)(void *, lfs_block_t), void *data);
 
 // Prunes any recoverable errors that may have occured in the filesystem
 //
@@ -492,7 +478,6 @@ int lfs_traverse(lfs_t *lfs, int (*cb)(void*, lfs_block_t), void *data);
 //
 // Returns a negative error code on failure.
 int lfs_deorphan(lfs_t *lfs);
-
 
 #ifdef __cplusplus
 } /* extern "C" */
