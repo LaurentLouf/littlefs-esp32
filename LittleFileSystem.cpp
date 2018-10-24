@@ -125,6 +125,10 @@ LittleFileSystem::LittleFileSystem(const char *name, BlockDevice *bd, lfs_size_t
       _prog_size(prog_size),
       _block_size(block_size),
       _lookahead(lookahead) {
+    // Create mutex
+    _mutex = xSemaphoreCreateMutex();
+
+    // Mount block device
     if (bd) {
         mount(bd);
     }
@@ -136,14 +140,14 @@ LittleFileSystem::~LittleFileSystem() {
 }
 
 int LittleFileSystem::mount(BlockDevice *bd) {
-    _mutex.lock();
+    xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("mount(%p)", bd);
     _bd = bd;
     int err = _bd->init();
     if (err) {
         _bd = NULL;
         LFS_INFO("mount -> %d", err);
-        _mutex.unlock();
+        xSemaphoreGive(_mutex);
         return err;
     }
 
@@ -175,17 +179,17 @@ int LittleFileSystem::mount(BlockDevice *bd) {
     if (err) {
         _bd = NULL;
         LFS_INFO("mount -> %d", lfs_toerror(err));
-        _mutex.unlock();
+        xSemaphoreGive(_mutex);
         return lfs_toerror(err);
     }
 
-    _mutex.unlock();
+    xSemaphoreGive(_mutex);
     LFS_INFO("mount -> %d", 0);
     return 0;
 }
 
 int LittleFileSystem::unmount() {
-    _mutex.lock();
+    xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("unmount(%s)", "");
     int res = 0;
     if (_bd) {
@@ -203,7 +207,7 @@ int LittleFileSystem::unmount() {
     }
 
     LFS_INFO("unmount -> %d", res);
-    _mutex.unlock();
+    xSemaphoreGive(_mutex);
     return res;
 }
 
@@ -260,7 +264,7 @@ int LittleFileSystem::format(BlockDevice *bd, lfs_size_t read_size, lfs_size_t p
 }
 
 int LittleFileSystem::reformat(BlockDevice *bd) {
-    _mutex.lock();
+    xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("reformat(%p)", bd);
     if (_bd) {
         if (!bd) {
@@ -270,70 +274,70 @@ int LittleFileSystem::reformat(BlockDevice *bd) {
         int err = unmount();
         if (err) {
             LFS_INFO("reformat -> %d", err);
-            _mutex.unlock();
+            xSemaphoreGive(_mutex);
             return err;
         }
     }
 
     if (!bd) {
         LFS_INFO("reformat -> %d", -ENODEV);
-        _mutex.unlock();
+        xSemaphoreGive(_mutex);
         return -ENODEV;
     }
 
     int err = LittleFileSystem::format(bd, _read_size, _prog_size, _block_size, _lookahead);
     if (err) {
         LFS_INFO("reformat -> %d", err);
-        _mutex.unlock();
+        xSemaphoreGive(_mutex);
         return err;
     }
 
     err = mount(bd);
     if (err) {
         LFS_INFO("reformat -> %d", err);
-        _mutex.unlock();
+        xSemaphoreGive(_mutex);
         return err;
     }
 
     LFS_INFO("reformat -> %d", 0);
-    _mutex.unlock();
+    xSemaphoreGive(_mutex);
     return 0;
 }
 
 int LittleFileSystem::remove(const char *filename) {
-    _mutex.lock();
+    xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("remove(\"%s\")", filename);
     int err = lfs_remove(&_lfs, filename);
     LFS_INFO("remove -> %d", lfs_toerror(err));
-    _mutex.unlock();
+    xSemaphoreGive(_mutex);
     return lfs_toerror(err);
 }
 
 int LittleFileSystem::rename(const char *oldname, const char *newname) {
-    _mutex.lock();
+    xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("rename(\"%s\", \"%s\")", oldname, newname);
     int err = lfs_rename(&_lfs, oldname, newname);
     LFS_INFO("rename -> %d", lfs_toerror(err));
-    _mutex.unlock();
+    xSemaphoreGive(_mutex);
     return lfs_toerror(err);
 }
 
 int LittleFileSystem::mkdir(const char *name, mode_t mode) {
-    _mutex.lock();
+    xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("mkdir(\"%s\", 0x%lx)", name, mode);
     int err = lfs_mkdir(&_lfs, name);
     LFS_INFO("mkdir -> %d", lfs_toerror(err));
-    _mutex.unlock();
+    xSemaphoreGive(_mutex);
     return lfs_toerror(err);
 }
 
 int LittleFileSystem::stat(const char *name, struct stat *st) {
     struct lfs_info info;
-    _mutex.lock();
+    xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("stat(\"%s\", %p)", name, st);
     int err = lfs_stat(&_lfs, name, &info);
     LFS_INFO("stat -> %d", lfs_toerror(err));
-    _mutex.unlock();
+    xSemaphoreGive(_mutex);
     st->st_size = info.size;
     st->st_mode = lfs_tomode(info.type);
     return lfs_toerror(err);
@@ -348,11 +352,11 @@ int LittleFileSystem::statvfs(const char *name, struct statvfs *st) {
     memset(st, 0, sizeof(struct statvfs));
 
     lfs_size_t in_use = 0;
-    _mutex.lock();
+    xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("statvfs(\"%s\", %p)", name, st);
     int err = lfs_traverse(&_lfs, lfs_statvfs_count, &in_use);
     LFS_INFO("statvfs -> %d", lfs_toerror(err));
-    _mutex.unlock();
+    xSemaphoreGive(_mutex);
     if (err) {
         return err;
     }
@@ -369,11 +373,11 @@ int LittleFileSystem::statvfs(const char *name, struct statvfs *st) {
 ////// File operations //////
 int LittleFileSystem::file_open(fs_file_t *file, const char *path, int flags) {
     lfs_file_t *f = new lfs_file_t;
-    _mutex.lock();
+    xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("file_open(%p, \"%s\", 0x%x)", *file, path, flags);
     int err = lfs_file_open(&_lfs, f, path, lfs_fromflags(flags));
     LFS_INFO("file_open -> %d", lfs_toerror(err));
-    _mutex.unlock();
+    xSemaphoreGive(_mutex);
     if (!err) {
         *file = f;
     } else {
@@ -384,83 +388,83 @@ int LittleFileSystem::file_open(fs_file_t *file, const char *path, int flags) {
 
 int LittleFileSystem::file_close(fs_file_t file) {
     lfs_file_t *f = (lfs_file_t *)file;
-    _mutex.lock();
+    xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("file_close(%p)", file);
     int err = lfs_file_close(&_lfs, f);
     LFS_INFO("file_close -> %d", lfs_toerror(err));
-    _mutex.unlock();
+    xSemaphoreGive(_mutex);
     delete f;
     return lfs_toerror(err);
 }
 
 ssize_t LittleFileSystem::file_read(fs_file_t file, void *buffer, size_t len) {
     lfs_file_t *f = (lfs_file_t *)file;
-    _mutex.lock();
+    xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("file_read(%p, %p, %d)", file, buffer, len);
     lfs_ssize_t res = lfs_file_read(&_lfs, f, buffer, len);
     LFS_INFO("file_read -> %d", lfs_toerror(res));
-    _mutex.unlock();
+    xSemaphoreGive(_mutex);
     return lfs_toerror(res);
 }
 
 ssize_t LittleFileSystem::file_write(fs_file_t file, const void *buffer, size_t len) {
     lfs_file_t *f = (lfs_file_t *)file;
-    _mutex.lock();
+    xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("file_write(%p, %p, %d)", file, buffer, len);
     lfs_ssize_t res = lfs_file_write(&_lfs, f, buffer, len);
     LFS_INFO("file_write -> %d", lfs_toerror(res));
-    _mutex.unlock();
+    xSemaphoreGive(_mutex);
     return lfs_toerror(res);
 }
 
 int LittleFileSystem::file_sync(fs_file_t file) {
     lfs_file_t *f = (lfs_file_t *)file;
-    _mutex.lock();
+    xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("file_sync(%p)", file);
     int err = lfs_file_sync(&_lfs, f);
     LFS_INFO("file_sync -> %d", lfs_toerror(err));
-    _mutex.unlock();
+    xSemaphoreGive(_mutex);
     return lfs_toerror(err);
 }
 
 off_t LittleFileSystem::file_seek(fs_file_t file, off_t offset, int whence) {
     lfs_file_t *f = (lfs_file_t *)file;
-    _mutex.lock();
+    xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("file_seek(%p, %ld, %d)", file, offset, whence);
     off_t res = lfs_file_seek(&_lfs, f, offset, lfs_fromwhence(whence));
     LFS_INFO("file_seek -> %d", lfs_toerror(res));
-    _mutex.unlock();
+    xSemaphoreGive(_mutex);
     return lfs_toerror(res);
 }
 
 off_t LittleFileSystem::file_tell(fs_file_t file) {
     lfs_file_t *f = (lfs_file_t *)file;
-    _mutex.lock();
+    xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("file_tell(%p)", file);
     off_t res = lfs_file_tell(&_lfs, f);
     LFS_INFO("file_tell -> %d", lfs_toerror(res));
-    _mutex.unlock();
+    xSemaphoreGive(_mutex);
     return lfs_toerror(res);
 }
 
 off_t LittleFileSystem::file_size(fs_file_t file) {
     lfs_file_t *f = (lfs_file_t *)file;
-    _mutex.lock();
+    xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("file_size(%p)", file);
     off_t res = lfs_file_size(&_lfs, f);
     LFS_INFO("file_size -> %d", lfs_toerror(res));
-    _mutex.unlock();
+    xSemaphoreGive(_mutex);
     return lfs_toerror(res);
 }
 
 ////// Dir operations //////
 int LittleFileSystem::dir_open(fs_dir_t *dir, const char *path) {
     lfs_dir_t *d = new lfs_dir_t;
-    _mutex.lock();
+    xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("dir_open(%p, \"%s\")", *dir, path);
     int err = lfs_dir_open(&_lfs, d, path);
     LFS_INFO("dir_open -> %d", lfs_toerror(err));
-    _mutex.unlock();
+    xSemaphoreGive(_mutex);
     if (!err) {
         *dir = d;
     } else {
@@ -471,11 +475,11 @@ int LittleFileSystem::dir_open(fs_dir_t *dir, const char *path) {
 
 int LittleFileSystem::dir_close(fs_dir_t dir) {
     lfs_dir_t *d = (lfs_dir_t *)dir;
-    _mutex.lock();
+    xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("dir_close(%p)", dir);
     int err = lfs_dir_close(&_lfs, d);
     LFS_INFO("dir_close -> %d", lfs_toerror(err));
-    _mutex.unlock();
+    xSemaphoreGive(_mutex);
     delete d;
     return lfs_toerror(err);
 }
@@ -483,11 +487,11 @@ int LittleFileSystem::dir_close(fs_dir_t dir) {
 ssize_t LittleFileSystem::dir_read(fs_dir_t dir, struct dirent *ent) {
     lfs_dir_t *d = (lfs_dir_t *)dir;
     struct lfs_info info;
-    _mutex.lock();
+    xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("dir_read(%p, %p)", dir, ent);
     int res = lfs_dir_read(&_lfs, d, &info);
     LFS_INFO("dir_read -> %d", lfs_toerror(res));
-    _mutex.unlock();
+    xSemaphoreGive(_mutex);
     if (res == 1) {
         ent->d_type = lfs_totype(info.type);
         strcpy(ent->d_name, info.name);
@@ -497,28 +501,28 @@ ssize_t LittleFileSystem::dir_read(fs_dir_t dir, struct dirent *ent) {
 
 void LittleFileSystem::dir_seek(fs_dir_t dir, off_t offset) {
     lfs_dir_t *d = (lfs_dir_t *)dir;
-    _mutex.lock();
+    xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("dir_seek(%p, %ld)", dir, offset);
     lfs_dir_seek(&_lfs, d, offset);
     LFS_INFO("dir_seek -> %s", "void");
-    _mutex.unlock();
+    xSemaphoreGive(_mutex);
 }
 
 off_t LittleFileSystem::dir_tell(fs_dir_t dir) {
     lfs_dir_t *d = (lfs_dir_t *)dir;
-    _mutex.lock();
+    xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("dir_tell(%p)", dir);
     lfs_soff_t res = lfs_dir_tell(&_lfs, d);
     LFS_INFO("dir_tell -> %d", lfs_toerror(res));
-    _mutex.unlock();
+    xSemaphoreGive(_mutex);
     return lfs_toerror(res);
 }
 
 void LittleFileSystem::dir_rewind(fs_dir_t dir) {
     lfs_dir_t *d = (lfs_dir_t *)dir;
-    _mutex.lock();
+    xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("dir_rewind(%p)", dir);
     lfs_dir_rewind(&_lfs, d);
     LFS_INFO("dir_rewind -> %s", "void");
-    _mutex.unlock();
+    xSemaphoreGive(_mutex);
 }

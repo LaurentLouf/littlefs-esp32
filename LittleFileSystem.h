@@ -18,7 +18,8 @@
 
 #include "BlockDevice.h"
 #include "FileSystem.h"
-#include "PlatformMutex.h"
+#include "FreeRTOS.h"
+#include "freertos/semphr.h"
 #include "lfs.h"
 
 /**
@@ -272,7 +273,7 @@ class LittleFileSystem : public mbed::FileSystem {
     const lfs_size_t _lookahead;
 
     // thread-safe locking
-    PlatformMutex _mutex;
+    SemaphoreHandle_t _mutex;
 };
 
 #endif
