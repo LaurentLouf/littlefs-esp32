@@ -211,7 +211,7 @@ int LittleFileSystem::unmount() {
 
 int LittleFileSystem::format(BlockDevice *bd, lfs_size_t read_size, lfs_size_t prog_size,
                              lfs_size_t block_size, lfs_size_t lookahead) {
-    LFS_INFO("format(%p, %ld, %ld, %ld, %ld)", bd, read_size, prog_size, block_size, lookahead);
+    LFS_INFO("format(%p, %ud, %ud, %ud, %ud)", bd, read_size, prog_size, block_size, lookahead);
     int err = bd->init();
     if (err) {
         LFS_INFO("format -> %d", err);
@@ -322,7 +322,7 @@ int LittleFileSystem::rename(const char *oldname, const char *newname) {
 
 int LittleFileSystem::mkdir(const char *name, mode_t mode) {
     xSemaphoreTake(_mutex, portMAX_DELAY);
-    LFS_INFO("mkdir(\"%s\", 0x%lx)", name, mode);
+    LFS_INFO("mkdir(\"%s\", 0x%x)", name, mode);
     int err = lfs_mkdir(&_lfs, name);
     LFS_INFO("mkdir -> %d", lfs_toerror(err));
     xSemaphoreGive(_mutex);
