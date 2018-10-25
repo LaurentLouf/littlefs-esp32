@@ -17,7 +17,6 @@
 #define MBED_LFSFILESYSTEM_H
 
 #include "BlockDevice.h"
-#include "FileSystem.h"
 #include "FreeRTOS.h"
 #include "freertos/semphr.h"
 #include "lfs.h"
@@ -25,7 +24,7 @@
 /**
  * LittleFileSystem, a little filesystem
  */
-class LittleFileSystem : public mbed::FileSystem {
+class LittleFileSystem {
    public:
     /** Lifetime of the LittleFileSystem
      *
@@ -54,7 +53,7 @@ class LittleFileSystem : public mbed::FileSystem {
                      lfs_size_t prog_size = MBED_LFS_PROG_SIZE,
                      lfs_size_t block_size = MBED_LFS_BLOCK_SIZE,
                      lfs_size_t lookahead = MBED_LFS_LOOKAHEAD);
-    virtual ~LittleFileSystem();
+    ~LittleFileSystem();
 
     /** Formats a block device with the LittleFileSystem
      *
@@ -157,14 +156,14 @@ class LittleFileSystem : public mbed::FileSystem {
      *                  bitwise or'd with one of O_CREAT, O_TRUNC, O_APPEND
      *  @return         0 on success, negative error code on failure
      */
-    virtual int file_open(mbed::fs_file_t *file, const char *path, int flags);
+    virtual int file_open(fs_file_t *file, const char *path, int flags);
 
     /** Close a file
      *
      *  @param file     File handle
      *  return          0 on success, negative error code on failure
      */
-    virtual int file_close(mbed::fs_file_t file);
+    virtual int file_close(fs_file_t file);
 
     /** Read the contents of a file into a buffer
      *
@@ -173,7 +172,7 @@ class LittleFileSystem : public mbed::FileSystem {
      *  @param size     The number of bytes to read
      *  @return         The number of bytes read, 0 at end of file, negative error on failure
      */
-    virtual ssize_t file_read(mbed::fs_file_t file, void *buffer, size_t size);
+    virtual ssize_t file_read(fs_file_t file, void *buffer, size_t size);
 
     /** Write the contents of a buffer to a file
      *
@@ -182,14 +181,14 @@ class LittleFileSystem : public mbed::FileSystem {
      *  @param size     The number of bytes to write
      *  @return         The number of bytes written, negative error on failure
      */
-    virtual ssize_t file_write(mbed::fs_file_t file, const void *buffer, size_t size);
+    virtual ssize_t file_write(fs_file_t file, const void *buffer, size_t size);
 
     /** Flush any buffers associated with the file
      *
      *  @param file     File handle
      *  @return         0 on success, negative error code on failure
      */
-    virtual int file_sync(mbed::fs_file_t file);
+    virtual int file_sync(fs_file_t file);
 
     /** Move the file position to a given offset from from a given location
      *
@@ -201,21 +200,21 @@ class LittleFileSystem : public mbed::FileSystem {
      *      SEEK_END to start from end of file
      *  @return         The new offset of the file
      */
-    virtual off_t file_seek(mbed::fs_file_t file, off_t offset, int whence);
+    virtual off_t file_seek(fs_file_t file, off_t offset, int whence);
 
     /** Get the file position of the file
      *
      *  @param file     File handle
      *  @return         The current offset in the file
      */
-    virtual off_t file_tell(mbed::fs_file_t file);
+    virtual off_t file_tell(fs_file_t file);
 
     /** Get the size of the file
      *
      *  @param file     File handle
      *  @return         Size of the file in bytes
      */
-    virtual off_t file_size(mbed::fs_file_t file);
+    virtual off_t file_size(fs_file_t file);
 
     /** Open a directory on the filesystem
      *
@@ -223,14 +222,14 @@ class LittleFileSystem : public mbed::FileSystem {
      *  @param path     Name of the directory to open
      *  @return         0 on success, negative error code on failure
      */
-    virtual int dir_open(mbed::fs_dir_t *dir, const char *path);
+    int dir_open(fs_dir_t *dir, const char *path);
 
     /** Close a directory
      *
      *  @param dir      Dir handle
      *  return          0 on success, negative error code on failure
      */
-    virtual int dir_close(mbed::fs_dir_t dir);
+    int dir_close(fs_dir_t dir);
 
     /** Read the next directory entry
      *
@@ -238,7 +237,7 @@ class LittleFileSystem : public mbed::FileSystem {
      *  @param ent      The directory entry to fill out
      *  @return         1 on reading a filename, 0 at end of directory, negative error on failure
      */
-    virtual ssize_t dir_read(mbed::fs_dir_t dir, struct dirent *ent);
+    ssize_t dir_read(fs_dir_t dir, struct dirent *ent);
 
     /** Set the current position of the directory
      *
@@ -246,22 +245,23 @@ class LittleFileSystem : public mbed::FileSystem {
      *  @param offset   Offset of the location to seek to,
      *                  must be a value returned from dir_tell
      */
-    virtual void dir_seek(mbed::fs_dir_t dir, off_t offset);
+    void dir_seek(fs_dir_t dir, off_t offset);
 
     /** Get the current position of the directory
      *
      *  @param dir      Dir handle
      *  @return         Position of the directory that can be passed to dir_rewind
      */
-    virtual off_t dir_tell(mbed::fs_dir_t dir);
+    off_t dir_tell(fs_dir_t dir);
 
     /** Rewind the current position to the beginning of the directory
      *
      *  @param dir      Dir handle
      */
-    virtual void dir_rewind(mbed::fs_dir_t dir);
+    void dir_rewind(fs_dir_t dir);
 
    private:
+    const char *const _name;
     lfs_t _lfs;  // _the actual filesystem
     struct lfs_config _config;
     BlockDevice *_bd;  // the block device

@@ -15,7 +15,6 @@
  */
 #include "LittleFileSystem.h"
 #include "errno.h"
-#include "filesystem/mbed_filesystem.h"
 #include "lfs.h"
 #include "lfs_util.h"
 
@@ -120,7 +119,7 @@ static int lfs_bd_sync(const struct lfs_config *c) {
 LittleFileSystem::LittleFileSystem(const char *name, BlockDevice *bd, lfs_size_t read_size,
                                    lfs_size_t prog_size, lfs_size_t block_size,
                                    lfs_size_t lookahead)
-    : FileSystem(name),
+    : _name(name),
       _read_size(read_size),
       _prog_size(prog_size),
       _block_size(block_size),
