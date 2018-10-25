@@ -88,13 +88,13 @@ class LittleFileSystem {
      *  @param bd       BlockDevice to mount to
      *  @return         0 on success, negative error code on failure
      */
-    virtual int mount(BlockDevice *bd);
+    int mount(BlockDevice *bd);
 
     /** Unmounts a filesystem from the underlying block device
      *
      *  @return         0 on success, negative error code on failure
      */
-    virtual int unmount();
+    int unmount();
 
     /** Reformats a filesystem, results in an empty and mounted filesystem
      *
@@ -106,14 +106,14 @@ class LittleFileSystem {
      *
      *  @return         0 on success, negative error code on failure
      */
-    virtual int reformat(BlockDevice *bd);
+    int reformat(BlockDevice *bd);
 
     /** Remove a file from the filesystem.
      *
      *  @param path     The name of the file to remove.
      *  @return         0 on success, negative error code on failure
      */
-    virtual int remove(const char *path);
+    int remove(const char *path);
 
     /** Rename a file in the filesystem.
      *
@@ -121,7 +121,7 @@ class LittleFileSystem {
      *  @param newpath  The name to rename it to
      *  @return         0 on success, negative error code on failure
      */
-    virtual int rename(const char *path, const char *newpath);
+    int rename(const char *path, const char *newpath);
 
     /** Store information about the file in a stat structure
      *
@@ -129,7 +129,7 @@ class LittleFileSystem {
      *  @param st       The stat buffer to write to
      *  @return         0 on success, negative error code on failure
      */
-    virtual int stat(const char *path, struct stat *st);
+    int stat(const char *path, struct stat *st);
 
     /** Create a directory in the filesystem.
      *
@@ -137,7 +137,7 @@ class LittleFileSystem {
      *  @param mode     The permissions with which to create the directory
      *  @return         0 on success, negative error code on failure
      */
-    virtual int mkdir(const char *path, mode_t mode);
+    int mkdir(const char *path, mode_t mode);
 
     /** Store information about the mounted filesystem in a statvfs structure
      *
@@ -145,7 +145,7 @@ class LittleFileSystem {
      *  @param buf      The stat buffer to write to
      *  @return         0 on success, negative error code on failure
      */
-    virtual int statvfs(const char *path, struct statvfs *buf);
+    int statvfs(const char *path, struct statvfs *buf);
 
    protected:
     /** Open a file on the filesystem
@@ -156,14 +156,14 @@ class LittleFileSystem {
      *                  bitwise or'd with one of O_CREAT, O_TRUNC, O_APPEND
      *  @return         0 on success, negative error code on failure
      */
-    virtual int file_open(fs_file_t *file, const char *path, int flags);
+    int file_open(fs_file_t *file, const char *path, int flags);
 
     /** Close a file
      *
      *  @param file     File handle
      *  return          0 on success, negative error code on failure
      */
-    virtual int file_close(fs_file_t file);
+    int file_close(fs_file_t file);
 
     /** Read the contents of a file into a buffer
      *
@@ -172,7 +172,7 @@ class LittleFileSystem {
      *  @param size     The number of bytes to read
      *  @return         The number of bytes read, 0 at end of file, negative error on failure
      */
-    virtual ssize_t file_read(fs_file_t file, void *buffer, size_t size);
+    ssize_t file_read(fs_file_t file, void *buffer, size_t size);
 
     /** Write the contents of a buffer to a file
      *
@@ -181,14 +181,14 @@ class LittleFileSystem {
      *  @param size     The number of bytes to write
      *  @return         The number of bytes written, negative error on failure
      */
-    virtual ssize_t file_write(fs_file_t file, const void *buffer, size_t size);
+    ssize_t file_write(fs_file_t file, const void *buffer, size_t size);
 
     /** Flush any buffers associated with the file
      *
      *  @param file     File handle
      *  @return         0 on success, negative error code on failure
      */
-    virtual int file_sync(fs_file_t file);
+    int file_sync(fs_file_t file);
 
     /** Move the file position to a given offset from from a given location
      *
@@ -200,21 +200,21 @@ class LittleFileSystem {
      *      SEEK_END to start from end of file
      *  @return         The new offset of the file
      */
-    virtual off_t file_seek(fs_file_t file, off_t offset, int whence);
+    off_t file_seek(fs_file_t file, off_t offset, int whence);
 
     /** Get the file position of the file
      *
      *  @param file     File handle
      *  @return         The current offset in the file
      */
-    virtual off_t file_tell(fs_file_t file);
+    off_t file_tell(fs_file_t file);
 
     /** Get the size of the file
      *
      *  @param file     File handle
      *  @return         Size of the file in bytes
      */
-    virtual off_t file_size(fs_file_t file);
+    off_t file_size(fs_file_t file);
 
     /** Open a directory on the filesystem
      *
