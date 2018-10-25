@@ -15,8 +15,7 @@
  */
 #include "LittleFileSystem.h"
 #include "errno.h"
-#include "lfs.h"
-#include "lfs_util.h"
+#include "littlefs/lfs_util.h"
 
 ////// Conversion functions //////
 static int lfs_toerror(int err) {

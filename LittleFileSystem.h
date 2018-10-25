@@ -15,11 +15,10 @@
  */
 #ifndef MBED_LFSFILESYSTEM_H
 #define MBED_LFSFILESYSTEM_H
-
 #include "BlockDevice.h"
 #include "FreeRTOS.h"
 #include "freertos/semphr.h"
-#include "lfs.h"
+#include "littlefs/lfs.h"
 
 /**
  * LittleFileSystem, a little filesystem
