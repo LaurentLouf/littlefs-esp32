@@ -1,0 +1,63 @@
+menu "LittleFS Configuration"
+
+config LFS_READ_SIZE
+    int "Minimum size of a block read"
+    default 64
+    help
+        This determines the size of read buffers. This may be larger than the physical read size to improve performance by caching more of the block device.
+
+config LFS_PROG_SIZE
+    int "Minimum size of a block program"
+    default 64
+    help
+        This determines the size of program buffers. This may be larger than the physical program size to improve performance by caching more of the block device.
+
+config LFS_BLOCK_SIZE
+    int "Size of an erasable block"
+    default 512
+    help
+        This does not impact ram consumption and may be larger than the physical erase size. However, this should be kept small as each file currently takes up an entire block.
+
+config LFS_LOOKAHEAD
+    int "Number of blocks to lookahead during block allocation"
+    default 512
+    help
+        A larger lookahead reduces the number of passes required to allocate a block. The lookahead buffer requires only 1 bit per block so it can be quite large with little ram impact. Should be a multiple of 32.
+
+config LFS_NO_INTRINSICS
+    bool "Disables intrinsics for bit operations"
+    default n
+    help
+        Disables intrinsics for bit operations such as ctz, popc, and le32 conversion. Can be disabled to help debug toolchain issues
+
+config LFS_NO_INFO
+    bool "Disables info logging"
+    default y
+    help
+        Disables info logging, true = disabled, false = enabled
+
+config LFS_NO_DEBUG
+    bool "Disables debug logging"
+    default y
+    help
+        Disables debug logging, true = disabled, false = enabled
+
+config LFS_NO_WARN
+    bool "Disables warn logging"
+    default y
+    help
+        Disables warn logging, true = disabled, false = enabled
+
+config LFS_NO_ERROR
+    bool "Disables error logging"
+    default n
+    help
+        Disables error logging, true = disabled, false = enabled
+
+config LFS_NO_ASSERT
+    bool "Disables asserts"
+    default y
+    help
+        Disables asserts, true = disabled, false = enabled
+
+endmenu

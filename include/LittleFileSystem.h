@@ -13,12 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef MBED_LFSFILESYSTEM_H
-#define MBED_LFSFILESYSTEM_H
+#ifndef LFSFILESYSTEM_H
+#define LFSFILESYSTEM_H
 #include "BlockDevice.h"
 #include "FreeRTOS.h"
 #include "freertos/semphr.h"
-#include "littlefs/lfs.h"
+#include "lfs.h"
+
+#define LFS_READ_SIZE CONFIG_LFS_READ_SIZE
+#define LFS_PROG_SIZE CONFIG_LFS_PROG_SIZE
+#define LFS_BLOCK_SIZE CONFIG_LFS_BLOCK_SIZE
+#define LFS_LOOKAHEAD CONFIG_LFS_LOOKAHEAD
+#define LFS_NO_INTRINSICS CONFIG_LFS_NO_INTRINSICS
+#define LFS_NO_INFO CONFIG_LFS_NO_INFO
+#define LFS_NO_DEBUG CONFIG_LFS_NO_DEBUG
+#define LFS_NO_WARN CONFIG_LFS_NO_WARN
+#define LFS_NO_ERROR CONFIG_LFS_NO_ERROR
+#define LFS_NO_ASSERT CONFIG_LFS_NO_ASSERT
 
 #define _IFMT 0170000    //!< type of file
 #define _IFSOCK 0140000  //!< socket
@@ -150,10 +161,8 @@ class LittleFileSystem {
      *      large with little ram impact. Should be a multiple of 32.
      */
     LittleFileSystem(const char *name = NULL, BlockDevice *bd = NULL,
-                     lfs_size_t read_size = MBED_LFS_READ_SIZE,
-                     lfs_size_t prog_size = MBED_LFS_PROG_SIZE,
-                     lfs_size_t block_size = MBED_LFS_BLOCK_SIZE,
-                     lfs_size_t lookahead = MBED_LFS_LOOKAHEAD);
+                     lfs_size_t read_size = LFS_READ_SIZE, lfs_size_t prog_size = LFS_PROG_SIZE,
+                     lfs_size_t block_size = LFS_BLOCK_SIZE, lfs_size_t lookahead = LFS_LOOKAHEAD);
     ~LittleFileSystem();
 
     /** Formats a block device with the LittleFileSystem
@@ -179,10 +188,9 @@ class LittleFileSystem {
      *      The lookahead buffer requires only 1 bit per block so it can be quite
      *      large with little ram impact. Should be a multiple of 32.
      */
-    static int format(BlockDevice *bd, lfs_size_t read_size = MBED_LFS_READ_SIZE,
-                      lfs_size_t prog_size = MBED_LFS_PROG_SIZE,
-                      lfs_size_t block_size = MBED_LFS_BLOCK_SIZE,
-                      lfs_size_t lookahead = MBED_LFS_LOOKAHEAD);
+    static int format(BlockDevice *bd, lfs_size_t read_size = LFS_READ_SIZE,
+                      lfs_size_t prog_size = LFS_PROG_SIZE, lfs_size_t block_size = LFS_BLOCK_SIZE,
+                      lfs_size_t lookahead = LFS_LOOKAHEAD);
 
     /** Mounts a filesystem to a block device
      *
