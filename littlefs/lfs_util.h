@@ -43,6 +43,12 @@ extern "C" {
 // code footprint
 
 // Logging functions
+#ifndef LFS_NO_INFO
+#define LFS_INFO(fmt, ...) printf("lfs info:%d: " fmt "\n", __LINE__, __VA_ARGS__)
+#else
+#define LFS_INFO(fmt, ...)
+#endif
+
 #ifndef LFS_NO_DEBUG
 #define LFS_DEBUG(fmt, ...) printf("lfs debug:%d: " fmt "\n", __LINE__, __VA_ARGS__)
 #else
