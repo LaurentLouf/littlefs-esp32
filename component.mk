@@ -6,5 +6,7 @@
 # lib(subdirectory_name).a in the build directory. This behaviour is entirely configurable,
 # please read the SDK documents if you need to do this.
 #
+COMPONENT_SRCDIRS := . littlefs
 COMPONENT_DEPENDS := spif-driver
 COMPONENT_ADD_INCLUDEDIRS := include littlefs
+COMPONENT_NAME := littlefs-esp32
