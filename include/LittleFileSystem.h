@@ -31,49 +31,49 @@
 #define LFS_NO_ERROR CONFIG_LFS_NO_ERROR
 #define LFS_NO_ASSERT CONFIG_LFS_NO_ASSERT
 
-#define _IFMT 0170000    //!< type of file
-#define _IFSOCK 0140000  //!< socket
-#define _IFLNK 0120000   //!< symbolic link
-#define _IFREG 0100000   //!< regular
-#define _IFBLK 0060000   //!< block special
-#define _IFDIR 0040000   //!< directory
-#define _IFCHR 0020000   //!< character special
-#define _IFIFO 0010000   //!< fifo special
+#define LFS_IFMT 0170000    //!< type of file
+#define LFS_IFSOCK 0140000  //!< socket
+#define LFS_IFLNK 0120000   //!< symbolic link
+#define LFS_IFREG 0100000   //!< regular
+#define LFS_IFBLK 0060000   //!< block special
+#define LFS_IFDIR 0040000   //!< directory
+#define LFS_IFCHR 0020000   //!< character special
+#define LFS_IFIFO 0010000   //!< fifo special
 
-#define S_IFMT _IFMT      //!< type of file
-#define S_IFSOCK _IFSOCK  //!< socket
-#define S_IFLNK _IFLNK    //!< symbolic link
-#define S_IFREG _IFREG    //!< regular
-#define S_IFBLK _IFBLK    //!< block special
-#define S_IFDIR _IFDIR    //!< directory
-#define S_IFCHR _IFCHR    //!< character special
-#define S_IFIFO _IFIFO    //!< fifo special
+#define LFS_S_IFMT LFS_IFMT      //!< type of file
+#define LFS_S_IFSOCK LFS_IFSOCK  //!< socket
+#define LFS_S_IFLNK LFS_IFLNK    //!< symbolic link
+#define LFS_S_IFREG LFS_IFREG    //!< regular
+#define LFS_S_IFBLK LFS_IFBLK    //!< block special
+#define LFS_S_IFDIR LFS_IFDIR    //!< directory
+#define LFS_S_IFCHR LFS_IFCHR    //!< character special
+#define LFS_S_IFIFO LFS_IFIFO    //!< fifo special
 
-#define S_IRWXU (S_IRUSR | S_IWUSR | S_IXUSR)
-#define S_IRUSR 0000400  //!< read permission, owner
-#define S_IWUSR 0000200  //!< write permission, owner
-#define S_IXUSR 0000100  //!< execute/search permission, owner
-#define S_IRWXG (S_IRGRP | S_IWGRP | S_IXGRP)
-#define S_IRGRP 0000040  //!< read permission, group
-#define S_IWGRP 0000020  //!< write permission, group
-#define S_IXGRP 0000010  //!< execute/search permission, group
-#define S_IRWXO (S_IROTH | S_IWOTH | S_IXOTH)
-#define S_IROTH 0000004  //!< read permission, other
-#define S_IWOTH 0000002  //!< write permission, other
-#define S_IXOTH 0000001  //!< execute/search permission, other
+#define LFS_S_IRWXU (LFS_S_IRUSR | LFS_S_IWUSR | LFS_S_IXUSR)
+#define LFS_S_IRUSR 0000400  //!< read permission, owner
+#define LFS_S_IWUSR 0000200  //!< write permission, owner
+#define LFS_S_IXUSR 0000100  //!< execute/search permission, owner
+#define LFS_S_IRWXG (LFS_S_IRGRP | LFS_S_IWGRP | LFS_S_IXGRP)
+#define LFS_S_IRGRP 0000040  //!< read permission, group
+#define LFS_S_IWGRP 0000020  //!< write permission, group
+#define LFS_S_IXGRP 0000010  //!< execute/search permission, group
+#define LFS_S_IRWXO (LFS_S_IROTH | LFS_S_IWOTH | LFS_S_IXOTH)
+#define LFS_S_IROTH 0000004  //!< read permission, other
+#define LFS_S_IWOTH 0000002  //!< write permission, other
+#define LFS_S_IXOTH 0000001  //!< execute/search permission, other
 
-#define NAME_MAX 255  //!< Maximum size of a name in a file path
+#define LFS_NAME_MAX 255  //!< Maximum size of a name in a file path
 
-#define O_RDONLY 0         //!< Open for reading
-#define O_WRONLY 1         //!< Open for writing
-#define O_RDWR 2           //!< Open for reading and writing
-#define O_NONBLOCK 0x0004  //!< Non-blocking mode
-#define O_APPEND 0x0008    //!< Set file offset to end of file prior to each write
-#define O_CREAT 0x0200     //!< Create file if it does not exist
-#define O_TRUNC 0x0400     //!< Truncate file to zero length
-#define O_EXCL 0x0800      //!< Fail if file exists
-#define O_BINARY 0x8000    //!< Open file in binary mode
-#define O_ACCMODE (O_RDONLY | O_WRONLY | O_RDWR)
+#define LFS_O_RDONLY 0         //!< Open for reading
+#define LFS_O_WRONLY 1         //!< Open for writing
+#define LFS_O_RDWR 2           //!< Open for reading and writing
+#define LFS_O_NONBLOCK 0x0004  //!< Non-blocking mode
+#define LFS_O_APPEND 0x0008    //!< Set file offset to end of file prior to each write
+#define LFS_O_CREAT 0x0200     //!< Create file if it does not exist
+#define LFS_O_TRUNC 0x0400     //!< Truncate file to zero length
+#define LFS_O_EXCL 0x0800      //!< Fail if file exists
+#define LFS_O_BINARY 0x8000    //!< Open file in binary mode
+#define LFS_O_ACCMODE (LFS_O_RDONLY | LFS_O_WRONLY | LFS_O_RDWR)
 
 // Type definitions
 typedef void *fs_file_t;
@@ -86,7 +86,7 @@ typedef signed long off_t;              //!< Offset in a data stream
 /* Refer to sys/stat standard
  * Note: Not all fields may be supported by the underlying filesystem
  */
-struct stat {
+struct lfs_stat {
     dev_t st_dev;      //!< Device ID containing file
     ino_t st_ino;      //!< File serial number
     mode_t st_mode;    //!< Mode of file
@@ -102,7 +102,7 @@ struct stat {
     time_t st_ctime;  //!< Time of last status change
 };
 
-struct statvfs {
+struct lfs_statvfs {
     unsigned long f_bsize;   //!< Filesystem block size
     unsigned long f_frsize;  //!< Fragment size (block size)
 
@@ -117,20 +117,20 @@ struct statvfs {
 /* The following are dirent.h definitions are declared here to guarantee
  * consistency where structure may be different with different toolchains
  */
-struct dirent {
-    char d_name[NAME_MAX + 1];  //!< Name of file
+struct lfs_dirent {
+    char d_name[LFS_NAME_MAX + 1];  //!< Name of file
     uint8_t d_type;             //!< Type of file
 };
 
 enum {
-    DT_UNKNOWN,  //!< The file type could not be determined.
-    DT_FIFO,     //!< This is a named pipe (FIFO).
-    DT_CHR,      //!< This is a character device.
-    DT_DIR,      //!< This is a directory.
-    DT_BLK,      //!< This is a block device.
-    DT_REG,      //!< This is a regular file.
-    DT_LNK,      //!< This is a symbolic link.
-    DT_SOCK,     //!< This is a UNIX domain socket.
+    LFS_DT_UNKNOWN,  //!< The file type could not be determined.
+    LFS_DT_FIFO,     //!< This is a named pipe (FIFO).
+    LFS_DT_CHR,      //!< This is a character device.
+    LFS_DT_DIR,      //!< This is a directory.
+    LFS_DT_BLK,      //!< This is a block device.
+    LFS_DT_REG,      //!< This is a regular file.
+    LFS_DT_LNK,      //!< This is a symbolic link.
+    LFS_DT_SOCK,     //!< This is a UNIX domain socket.
 };
 
 /**
@@ -238,7 +238,7 @@ class LittleFileSystem {
      *  @param st       The stat buffer to write to
      *  @return         0 on success, negative error code on failure
      */
-    int stat(const char *path, struct stat *st);
+    int stat(const char *path, struct lfs_stat *st);
 
     /** Create a directory in the filesystem.
      *
@@ -254,15 +254,15 @@ class LittleFileSystem {
      *  @param buf      The stat buffer to write to
      *  @return         0 on success, negative error code on failure
      */
-    int statvfs(const char *path, struct statvfs *buf);
+    int statvfs(const char *path, struct lfs_statvfs *buf);
 
    protected:
     /** Open a file on the filesystem
      *
      *  @param file     Destination for the handle to a newly created file
      *  @param path     The name of the file to open
-     *  @param flags    The flags to open the file in, one of O_RDONLY, O_WRONLY, O_RDWR,
-     *                  bitwise or'd with one of O_CREAT, O_TRUNC, O_APPEND
+     *  @param flags    The flags to open the file in, one of LFS_O_RDONLY, LFS_O_WRONLY, LFS_O_RDWR,
+     *                  bitwise or'd with one of LFS_O_CREAT, LFS_O_TRUNC, LFS_O_APPEND
      *  @return         0 on success, negative error code on failure
      */
     int file_open(fs_file_t *file, const char *path, int flags);
@@ -346,7 +346,7 @@ class LittleFileSystem {
      *  @param ent      The directory entry to fill out
      *  @return         1 on reading a filename, 0 at end of directory, negative error on failure
      */
-    ssize_t dir_read(fs_dir_t dir, struct dirent *ent);
+    ssize_t dir_read(fs_dir_t dir, struct lfs_dirent *ent);
 
     /** Set the current position of the directory
      *

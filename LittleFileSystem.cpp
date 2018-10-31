@@ -46,11 +46,11 @@ static int lfs_toerror(int err) {
 }
 
 static int lfs_fromflags(int flags) {
-    return ((((flags & 3) == O_RDONLY) ? LFS_O_RDONLY : 0) |
-            (((flags & 3) == O_WRONLY) ? LFS_O_WRONLY : 0) |
-            (((flags & 3) == O_RDWR) ? LFS_O_RDWR : 0) | ((flags & O_CREAT) ? LFS_O_CREAT : 0) |
-            ((flags & O_EXCL) ? LFS_O_EXCL : 0) | ((flags & O_TRUNC) ? LFS_O_TRUNC : 0) |
-            ((flags & O_APPEND) ? LFS_O_APPEND : 0));
+    return ((((flags & 3) == LFS_O_RDONLY) ? LFS_O_RDONLY : 0) |
+            (((flags & 3) == LFS_O_WRONLY) ? LFS_O_WRONLY : 0) |
+            (((flags & 3) == LFS_O_RDWR) ? LFS_O_RDWR : 0) | ((flags & LFS_O_CREAT) ? LFS_O_CREAT : 0) |
+            ((flags & LFS_O_EXCL) ? LFS_O_EXCL : 0) | ((flags & LFS_O_TRUNC) ? LFS_O_TRUNC : 0) |
+            ((flags & LFS_O_APPEND) ? LFS_O_APPEND : 0));
 }
 
 static int lfs_fromwhence(int whence) {
@@ -67,12 +67,12 @@ static int lfs_fromwhence(int whence) {
 }
 
 static int lfs_tomode(int type) {
-    int mode = S_IRWXU | S_IRWXG | S_IRWXO;
+    int mode = LFS_S_IRWXU | LFS_S_IRWXG | LFS_S_IRWXO;
     switch (type) {
         case LFS_TYPE_DIR:
-            return mode | S_IFDIR;
+            return mode | LFS_S_IFDIR;
         case LFS_TYPE_REG:
-            return mode | S_IFREG;
+            return mode | LFS_S_IFREG;
         default:
             return 0;
     }
@@ -81,11 +81,11 @@ static int lfs_tomode(int type) {
 static int lfs_totype(int type) {
     switch (type) {
         case LFS_TYPE_DIR:
-            return DT_DIR;
+            return LFS_DT_DIR;
         case LFS_TYPE_REG:
-            return DT_REG;
+            return LFS_DT_REG;
         default:
-            return DT_UNKNOWN;
+            return LFS_DT_UNKNOWN;
     }
 }
 
@@ -329,7 +329,7 @@ int LittleFileSystem::mkdir(const char *name, mode_t mode) {
     return lfs_toerror(err);
 }
 
-int LittleFileSystem::stat(const char *name, struct stat *st) {
+int LittleFileSystem::stat(const char *name, struct lfs_stat *st) {
     struct lfs_info info;
     xSemaphoreTake(_mutex, portMAX_DELAY);
     LFS_INFO("stat(\"%s\", %p)", name, st);
@@ -346,8 +346,8 @@ static int lfs_statvfs_count(void *p, lfs_block_t b) {
     return 0;
 }
 
-int LittleFileSystem::statvfs(const char *name, struct statvfs *st) {
-    memset(st, 0, sizeof(struct statvfs));
+int LittleFileSystem::statvfs(const char *name, struct lfs_statvfs *st) {
+    memset(st, 0, sizeof(struct lfs_statvfs));
 
     lfs_size_t in_use = 0;
     xSemaphoreTake(_mutex, portMAX_DELAY);
@@ -482,7 +482,7 @@ int LittleFileSystem::dir_close(fs_dir_t dir) {
     return lfs_toerror(err);
 }
 
-ssize_t LittleFileSystem::dir_read(fs_dir_t dir, struct dirent *ent) {
+ssize_t LittleFileSystem::dir_read(fs_dir_t dir, struct lfs_dirent *ent) {
     lfs_dir_t *d = (lfs_dir_t *)dir;
     struct lfs_info info;
     xSemaphoreTake(_mutex, portMAX_DELAY);
