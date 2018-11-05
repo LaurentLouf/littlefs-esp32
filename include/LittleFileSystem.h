@@ -15,21 +15,42 @@
  */
 #ifndef LFSFILESYSTEM_H
 #define LFSFILESYSTEM_H
-#include "BlockDevice.h"
-#include "FreeRTOS.h"
-#include "freertos/semphr.h"
-#include "lfs.h"
 
 #define LFS_READ_SIZE CONFIG_LFS_READ_SIZE
 #define LFS_PROG_SIZE CONFIG_LFS_PROG_SIZE
 #define LFS_BLOCK_SIZE CONFIG_LFS_BLOCK_SIZE
 #define LFS_LOOKAHEAD CONFIG_LFS_LOOKAHEAD
 #define LFS_NO_INTRINSICS CONFIG_LFS_NO_INTRINSICS
-#define LFS_NO_INFO CONFIG_LFS_NO_INFO
-#define LFS_NO_DEBUG CONFIG_LFS_NO_DEBUG
-#define LFS_NO_WARN CONFIG_LFS_NO_WARN
-#define LFS_NO_ERROR CONFIG_LFS_NO_ERROR
-#define LFS_NO_ASSERT CONFIG_LFS_NO_ASSERT
+#ifdef CONFIG_LFS_NO_INFO
+#define LFS_NO_INFO
+#else
+#undef LFS_NO_INFO
+#endif
+#ifdef CONFIG_LFS_NO_DEBUG
+#define LFS_NO_DEBUG
+#else
+#undef LFS_NO_DEBUG
+#endif
+#ifdef CONFIG_LFS_NO_WARN
+#define LFS_NO_WARN
+#else
+#undef LFS_NO_WARN
+#endif
+#ifdef CONFIG_LFS_NO_ERROR
+#define LFS_NO_ERROR
+#else
+#undef LFS_NO_ERROR
+#endif
+#ifdef CONFIG_LFS_NO_ASSERT
+#define LFS_NO_ASSERT
+#else
+#undef LFS_NO_ASSERT
+#endif
+
+#include "BlockDevice.h"
+#include "FreeRTOS.h"
+#include "freertos/semphr.h"
+#include "lfs.h"
 
 #define LFS_IFMT 0170000    //!< type of file
 #define LFS_IFSOCK 0140000  //!< socket
