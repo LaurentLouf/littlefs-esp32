@@ -277,7 +277,6 @@ class LittleFileSystem {
      */
     int statvfs(const char *path, struct lfs_statvfs *buf);
 
-   protected:
     /** Open a file on the filesystem
      *
      *  @param file     Destination for the handle to a newly created file
