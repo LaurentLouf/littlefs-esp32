@@ -30,30 +30,6 @@ config LFS_NO_INTRINSICS
     help
         Disables intrinsics for bit operations such as ctz, popc, and le32 conversion. Can be disabled to help debug toolchain issues
 
-config LFS_NO_INFO
-    bool "Disables info logging"
-    default y
-    help
-        Disables info logging, true = disabled, false = enabled
-
-config LFS_NO_DEBUG
-    bool "Disables debug logging"
-    default y
-    help
-        Disables debug logging, true = disabled, false = enabled
-
-config LFS_NO_WARN
-    bool "Disables warn logging"
-    default y
-    help
-        Disables warn logging, true = disabled, false = enabled
-
-config LFS_NO_ERROR
-    bool "Disables error logging"
-    default n
-    help
-        Disables error logging, true = disabled, false = enabled
-
 config LFS_NO_ASSERT
     bool "Disables asserts"
     default y

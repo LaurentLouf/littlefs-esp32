@@ -42,31 +42,6 @@ extern "C" {
 // macros must not have side-effects as the macros can be removed for a smaller
 // code footprint
 
-// Logging functions
-#ifndef LFS_NO_INFO
-#define LFS_INFO(fmt, ...) printf("lfs info:%d: " fmt "\n", __LINE__, __VA_ARGS__)
-#else
-#define LFS_INFO(fmt, ...)
-#endif
-
-#ifndef LFS_NO_DEBUG
-#define LFS_DEBUG(fmt, ...) printf("lfs debug:%d: " fmt "\n", __LINE__, __VA_ARGS__)
-#else
-#define LFS_DEBUG(fmt, ...)
-#endif
-
-#ifndef LFS_NO_WARN
-#define LFS_WARN(fmt, ...) printf("lfs warn:%d: " fmt "\n", __LINE__, __VA_ARGS__)
-#else
-#define LFS_WARN(fmt, ...)
-#endif
-
-#ifndef LFS_NO_ERROR
-#define LFS_ERROR(fmt, ...) printf("lfs error:%d: " fmt "\n", __LINE__, __VA_ARGS__)
-#else
-#define LFS_ERROR(fmt, ...)
-#endif
-
 // Runtime assertions
 #ifndef LFS_NO_ASSERT
 #define LFS_ASSERT(test) assert(test)

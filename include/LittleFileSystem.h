@@ -21,26 +21,7 @@
 #define LFS_BLOCK_SIZE CONFIG_LFS_BLOCK_SIZE
 #define LFS_LOOKAHEAD CONFIG_LFS_LOOKAHEAD
 #define LFS_NO_INTRINSICS CONFIG_LFS_NO_INTRINSICS
-#ifdef CONFIG_LFS_NO_INFO
-#define LFS_NO_INFO
-#else
-#undef LFS_NO_INFO
-#endif
-#ifdef CONFIG_LFS_NO_DEBUG
-#define LFS_NO_DEBUG
-#else
-#undef LFS_NO_DEBUG
-#endif
-#ifdef CONFIG_LFS_NO_WARN
-#define LFS_NO_WARN
-#else
-#undef LFS_NO_WARN
-#endif
-#ifdef CONFIG_LFS_NO_ERROR
-#define LFS_NO_ERROR
-#else
-#undef LFS_NO_ERROR
-#endif
+
 #ifdef CONFIG_LFS_NO_ASSERT
 #define LFS_NO_ASSERT
 #else
