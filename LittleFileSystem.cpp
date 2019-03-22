@@ -147,7 +147,7 @@ int LittleFileSystem::mount(BlockDevice *bd) {
     int err = _bd->init();
     if (err) {
         _bd = NULL;
-        ESP_LOGE(TAG, "mount -> %d", err);
+        ESP_LOGE(TAG, "mount(%p) -> %d", bd, err);
         xSemaphoreGive(_mutex);
         return err;
     }
@@ -179,13 +179,13 @@ int LittleFileSystem::mount(BlockDevice *bd) {
     err = lfs_mount(&_lfs, &_config);
     if (err) {
         _bd = NULL;
-        ESP_LOGE(TAG, "mount -> %d", lfs_toerror(err));
+        ESP_LOGE(TAG, "mount(%p) -> %d", bd, lfs_toerror(err));
         xSemaphoreGive(_mutex);
         return lfs_toerror(err);
     }
 
     xSemaphoreGive(_mutex);
-    ESP_LOGV(TAG, "mount -> %d", 0);
+    ESP_LOGV(TAG, "mount(%p) -> %d", bd, 0);
     return 0;
 }
 
@@ -310,7 +310,7 @@ int LittleFileSystem::remove(const char *filename) {
     xSemaphoreTake(_mutex, portMAX_DELAY);
     ESP_LOGV(TAG, "remove(\"%s\")", filename);
     int err = lfs_remove(&_lfs, filename);
-    ESP_LOGD(TAG, "remove -> %d", lfs_toerror(err));
+    ESP_LOGD(TAG, "remove(\"%s\") -> %d", filename, lfs_toerror(err));
     xSemaphoreGive(_mutex);
     return lfs_toerror(err);
 }
@@ -319,7 +319,7 @@ int LittleFileSystem::rename(const char *oldname, const char *newname) {
     xSemaphoreTake(_mutex, portMAX_DELAY);
     ESP_LOGV(TAG, "rename(\"%s\", \"%s\")", oldname, newname);
     int err = lfs_rename(&_lfs, oldname, newname);
-    ESP_LOGD(TAG, "rename -> %d", lfs_toerror(err));
+    ESP_LOGD(TAG, "rename(\"%s\", \"%s\") -> %d", oldname, newname, lfs_toerror(err));
     xSemaphoreGive(_mutex);
     return lfs_toerror(err);
 }
@@ -328,7 +328,7 @@ int LittleFileSystem::mkdir(const char *name, mode_t mode) {
     xSemaphoreTake(_mutex, portMAX_DELAY);
     ESP_LOGV(TAG, "mkdir(\"%s\", 0x%x)", name, mode);
     int err = lfs_mkdir(&_lfs, name);
-    ESP_LOGD(TAG, "mkdir -> %d", lfs_toerror(err));
+    ESP_LOGD(TAG, "mkdir(\"%s\", 0x%x) -> %d", name, mode, lfs_toerror(err));
     xSemaphoreGive(_mutex);
     return lfs_toerror(err);
 }
@@ -338,7 +338,7 @@ int LittleFileSystem::stat(const char *name, struct lfs_stat *st) {
     xSemaphoreTake(_mutex, portMAX_DELAY);
     ESP_LOGV(TAG, "stat(\"%s\", %p)", name, st);
     int err = lfs_stat(&_lfs, name, &info);
-    ESP_LOGD(TAG, "stat -> %d", lfs_toerror(err));
+    ESP_LOGD(TAG, "stat(\"%s\", %p) -> %d", name, st, lfs_toerror(err));
     xSemaphoreGive(_mutex);
     st->st_size = info.size;
     st->st_mode = lfs_tomode(info.type);
@@ -359,7 +359,7 @@ int LittleFileSystem::statvfs(const char *name, struct lfs_statvfs *st) {
     int err = lfs_traverse(&_lfs, lfs_statvfs_count, &in_use);
     xSemaphoreGive(_mutex);
     if (err) {
-        ESP_LOGE(TAG, "statvfs -> %d", lfs_toerror(err));
+        ESP_LOGE(TAG, "statvfs(\"%s\", %p) -> %d", name, st, lfs_toerror(err));
         return err;
     }
 
@@ -382,7 +382,7 @@ int LittleFileSystem::file_open(fs_file_t *file, const char *path, int flags) {
     if (!err) {
         *file = f;
     } else {
-        ESP_LOGE(TAG, "file_open -> %d", lfs_toerror(err));
+        ESP_LOGE(TAG, "file_open(%p, \"%s\", 0x%x) -> %d", *file, path, flags, lfs_toerror(err));
         delete f;
     }
     return lfs_toerror(err);
@@ -393,7 +393,7 @@ int LittleFileSystem::file_close(fs_file_t file) {
     xSemaphoreTake(_mutex, portMAX_DELAY);
     ESP_LOGV(TAG, "file_close(%p)", file);
     int err = lfs_file_close(&_lfs, f);
-    ESP_LOGD(TAG, "file_close -> %d", lfs_toerror(err));
+    ESP_LOGD(TAG, "file_close(%p) -> %d", file, lfs_toerror(err));
     xSemaphoreGive(_mutex);
     delete f;
     return lfs_toerror(err);
@@ -404,7 +404,7 @@ ssize_t LittleFileSystem::file_read(fs_file_t file, void *buffer, size_t len) {
     xSemaphoreTake(_mutex, portMAX_DELAY);
     ESP_LOGV(TAG, "file_read(%p, %p, %d)", file, buffer, len);
     lfs_ssize_t res = lfs_file_read(&_lfs, f, buffer, len);
-    ESP_LOGD(TAG, "file_read -> %d", lfs_toerror(res));
+    ESP_LOGD(TAG, "file_read(%p, %p, %d) -> %d", file, buffer, len, lfs_toerror(res));
     xSemaphoreGive(_mutex);
     return lfs_toerror(res);
 }
@@ -414,7 +414,7 @@ ssize_t LittleFileSystem::file_write(fs_file_t file, const void *buffer, size_t 
     xSemaphoreTake(_mutex, portMAX_DELAY);
     ESP_LOGV(TAG, "file_write(%p, %p, %d)", file, buffer, len);
     lfs_ssize_t res = lfs_file_write(&_lfs, f, buffer, len);
-    ESP_LOGD(TAG, "file_write -> %d", lfs_toerror(res));
+    ESP_LOGD(TAG, "file_write(%p, %p, %d) -> %d", file, buffer, len, lfs_toerror(res));
     xSemaphoreGive(_mutex);
     return lfs_toerror(res);
 }
@@ -424,7 +424,7 @@ int LittleFileSystem::file_sync(fs_file_t file) {
     xSemaphoreTake(_mutex, portMAX_DELAY);
     ESP_LOGV(TAG, "file_sync(%p)", file);
     int err = lfs_file_sync(&_lfs, f);
-    ESP_LOGD(TAG, "file_sync -> %d", lfs_toerror(err));
+    ESP_LOGD(TAG, "file_sync(%p) -> %d", file, lfs_toerror(err));
     xSemaphoreGive(_mutex);
     return lfs_toerror(err);
 }
@@ -434,7 +434,7 @@ off_t LittleFileSystem::file_seek(fs_file_t file, off_t offset, int whence) {
     xSemaphoreTake(_mutex, portMAX_DELAY);
     ESP_LOGV(TAG, "file_seek(%p, %ld, %d)", file, offset, whence);
     off_t res = lfs_file_seek(&_lfs, f, offset, lfs_fromwhence(whence));
-    ESP_LOGD(TAG, "file_seek -> %d", lfs_toerror(res));
+    ESP_LOGD(TAG, "file_seek(%p, %ld, %d) -> %d", file, offset, whence, lfs_toerror(res));
     xSemaphoreGive(_mutex);
     return lfs_toerror(res);
 }
@@ -444,7 +444,7 @@ off_t LittleFileSystem::file_tell(fs_file_t file) {
     xSemaphoreTake(_mutex, portMAX_DELAY);
     ESP_LOGV(TAG, "file_tell(%p)", file);
     off_t res = lfs_file_tell(&_lfs, f);
-    ESP_LOGD(TAG, "file_tell -> %d", lfs_toerror(res));
+    ESP_LOGD(TAG, "file_tell(%p) -> %d", file, lfs_toerror(res));
     xSemaphoreGive(_mutex);
     return lfs_toerror(res);
 }
@@ -454,7 +454,7 @@ off_t LittleFileSystem::file_size(fs_file_t file) {
     xSemaphoreTake(_mutex, portMAX_DELAY);
     ESP_LOGV(TAG, "file_size(%p)", file);
     off_t res = lfs_file_size(&_lfs, f);
-    ESP_LOGD(TAG, "file_size -> %d", lfs_toerror(res));
+    ESP_LOGD(TAG, "file_size(%p) -> %d", file, lfs_toerror(res));
     xSemaphoreGive(_mutex);
     return lfs_toerror(res);
 }
@@ -469,7 +469,7 @@ int LittleFileSystem::dir_open(fs_dir_t *dir, const char *path) {
     if (!err) {
         *dir = d;
     } else {
-        ESP_LOGE(TAG, "dir_open -> %d", lfs_toerror(err));
+        ESP_LOGE(TAG, "dir_open(%p, \"%s\") -> %d", *dir, path, lfs_toerror(err));
         delete d;
     }
     return lfs_toerror(err);
@@ -480,7 +480,7 @@ int LittleFileSystem::dir_close(fs_dir_t dir) {
     xSemaphoreTake(_mutex, portMAX_DELAY);
     ESP_LOGV(TAG, "dir_close(%p)", dir);
     int err = lfs_dir_close(&_lfs, d);
-    ESP_LOGD(TAG, "dir_close -> %d", lfs_toerror(err));
+    ESP_LOGD(TAG, "dir_close(%p) -> %d", dir, lfs_toerror(err));
     xSemaphoreGive(_mutex);
     delete d;
     return lfs_toerror(err);
@@ -492,7 +492,7 @@ ssize_t LittleFileSystem::dir_read(fs_dir_t dir, struct lfs_dirent *ent) {
     xSemaphoreTake(_mutex, portMAX_DELAY);
     ESP_LOGV(TAG, "dir_read(%p, %p)", dir, ent);
     int res = lfs_dir_read(&_lfs, d, &info);
-    ESP_LOGD(TAG, "dir_read -> %d", lfs_toerror(res));
+    ESP_LOGD(TAG, "dir_read(%p, %p) -> %d", dir, ent, lfs_toerror(res));
     xSemaphoreGive(_mutex);
     if (res == 1) {
         ent->d_type = lfs_totype(info.type);
@@ -506,7 +506,7 @@ void LittleFileSystem::dir_seek(fs_dir_t dir, off_t offset) {
     xSemaphoreTake(_mutex, portMAX_DELAY);
     ESP_LOGV(TAG, "dir_seek(%p, %ld)", dir, offset);
     lfs_dir_seek(&_lfs, d, offset);
-    ESP_LOGD(TAG, "dir_seek -> %s", "void");
+    ESP_LOGD(TAG, "dir_seek(%p, %ld) -> %s", dir, offset, "void");
     xSemaphoreGive(_mutex);
 }
 
@@ -515,7 +515,7 @@ off_t LittleFileSystem::dir_tell(fs_dir_t dir) {
     xSemaphoreTake(_mutex, portMAX_DELAY);
     ESP_LOGV(TAG, "dir_tell(%p)", dir);
     lfs_soff_t res = lfs_dir_tell(&_lfs, d);
-    ESP_LOGD(TAG, "dir_tell -> %d", lfs_toerror(res));
+    ESP_LOGD(TAG, "dir_tell(%p) -> %d", dir, lfs_toerror(res));
     xSemaphoreGive(_mutex);
     return lfs_toerror(res);
 }
@@ -525,6 +525,6 @@ void LittleFileSystem::dir_rewind(fs_dir_t dir) {
     xSemaphoreTake(_mutex, portMAX_DELAY);
     ESP_LOGV(TAG, "dir_rewind(%p)", dir);
     lfs_dir_rewind(&_lfs, d);
-    ESP_LOGD(TAG, "dir_rewind -> %s", "void");
+    ESP_LOGD(TAG, "dir_rewind(%p) -> %s", dir, "void");
     xSemaphoreGive(_mutex);
 }
