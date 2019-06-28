@@ -28,6 +28,7 @@
 #undef LFS_NO_ASSERT
 #endif
 
+#include <fcntl.h>
 #include "BlockDevice.h"
 #include "FreeRTOS.h"
 #include "freertos/semphr.h"
@@ -65,17 +66,6 @@
 #define LFS_S_IXOTH 0000001  //!< execute/search permission, other
 
 #define LFS_NAME_MAX 255  //!< Maximum size of a name in a file path
-
-#define LFS_O_RDONLY 0         //!< Open for reading
-#define LFS_O_WRONLY 1         //!< Open for writing
-#define LFS_O_RDWR 2           //!< Open for reading and writing
-#define LFS_O_NONBLOCK 0x0004  //!< Non-blocking mode
-#define LFS_O_APPEND 0x0008    //!< Set file offset to end of file prior to each write
-#define LFS_O_CREAT 0x0200     //!< Create file if it does not exist
-#define LFS_O_TRUNC 0x0400     //!< Truncate file to zero length
-#define LFS_O_EXCL 0x0800      //!< Fail if file exists
-#define LFS_O_BINARY 0x8000    //!< Open file in binary mode
-#define LFS_O_ACCMODE (LFS_O_RDONLY | LFS_O_WRONLY | LFS_O_RDWR)
 
 // Type definitions
 typedef void *fs_file_t;
@@ -262,8 +252,8 @@ class LittleFileSystem {
      *
      *  @param file     Destination for the handle to a newly created file
      *  @param path     The name of the file to open
-     *  @param flags    The flags to open the file in, one of LFS_O_RDONLY, LFS_O_WRONLY, LFS_O_RDWR,
-     *                  bitwise or'd with one of LFS_O_CREAT, LFS_O_TRUNC, LFS_O_APPEND
+     *  @param flags    The flags to open the file in, one of O_RDONLY, O_WRONLY, O_RDWR, bitwise
+     * or'd with one of O_CREAT, O_TRUNC, O_APPEND
      *  @return         0 on success, negative error code on failure
      */
     int file_open(fs_file_t *file, const char *path, int flags);

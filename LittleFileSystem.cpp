@@ -49,11 +49,11 @@ static int lfs_toerror(int err) {
 }
 
 static int lfs_fromflags(int flags) {
-    return ((((flags & 3) == LFS_O_RDONLY) ? LFS_O_RDONLY : 0) |
-            (((flags & 3) == LFS_O_WRONLY) ? LFS_O_WRONLY : 0) |
-            (((flags & 3) == LFS_O_RDWR) ? LFS_O_RDWR : 0) | ((flags & LFS_O_CREAT) ? LFS_O_CREAT : 0) |
-            ((flags & LFS_O_EXCL) ? LFS_O_EXCL : 0) | ((flags & LFS_O_TRUNC) ? LFS_O_TRUNC : 0) |
-            ((flags & LFS_O_APPEND) ? LFS_O_APPEND : 0));
+    return ((((flags & 3) == O_RDONLY) ? LFS_O_RDONLY : 0) |
+            (((flags & 3) == O_WRONLY) ? LFS_O_WRONLY : 0) |
+            (((flags & 3) == O_RDWR) ? LFS_O_RDWR : 0) | ((flags & O_CREAT) ? LFS_O_CREAT : 0) |
+            ((flags & O_EXCL) ? LFS_O_EXCL : 0) | ((flags & O_TRUNC) ? LFS_O_TRUNC : 0) |
+            ((flags & O_APPEND) ? LFS_O_APPEND : 0));
 }
 
 static int lfs_fromwhence(int whence) {
